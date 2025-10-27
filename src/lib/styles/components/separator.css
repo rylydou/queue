@@ -1,0 +1,8 @@
+.v-sep {
+	align-self: center;
+	width: 1px;
+	height: 16px;
+	border-radius: 1px;
+	background-color: currentColor;
+	opacity: 25%;
+}

@@ -1,0 +1,41 @@
+:root {
+	--width: 48rem;
+	--radius: 0.65rem;
+
+	--base-bg: oklch(1 0 0);
+	--base-fg: oklch(0.141 0.005 285.823);
+
+	--card-bg: oklch(1 0 0);
+	--card-fg: oklch(0.141 0.005 285.823);
+	--card-border: oklch(0.92 0.004 286.32);
+	--card-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px;
+
+	--input-bg: oklch(1 0 0);
+	--input-border: oklch(0.92 0.004 286.32);
+	--input-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+
+	--muted: oklch(0.967 0.001 286.375);
+	--muted-fg: #888;
+
+	--popover-bg: oklch(1 0 0);
+	--popover-fg: oklch(0.141 0.005 285.823);
+	--popover-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px;
+
+	/* --primary: oklch(0.645 0.246 180);
+	--primary-fg: oklch(0.969 0.015 180); */
+	--primary: var(--base-fg);
+	--primary-fg: var(--base-bg);
+
+	--secondary: var(--base-bg);
+	--secondary-fg: var(--base-fg);
+
+	--border: oklch(0.92 0.004 286.32);
+
+	--sidebar-bg: oklch(0.985 0 0);
+	--sidebar-fg: oklch(0.141 0.005 285.823);
+	--sidebar-primary: oklch(0.645 0.246 16.439);
+	--sidebar-primary-fg: oklch(0.969 0.015 12.422);
+	--sidebar-accent: oklch(0.967 0.001 286.375);
+	--sidebar-accent-fg: oklch(0.21 0.006 285.885);
+	--sidebar-border: oklch(0.92 0.004 286.32);
+}

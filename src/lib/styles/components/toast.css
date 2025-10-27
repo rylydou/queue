@@ -1,0 +1,10 @@
+.toast {
+	border: solid 1px var(--border);
+	border-radius: var(--radius);
+	background-color: var(--popover-bg);
+	color: var(--popover-fg);
+	box-shadow: var(--popover-shadow);
+	padding: 12px 16px;
+
+	font-size: 14px;
+}

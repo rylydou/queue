@@ -1,0 +1,108 @@
+.btn,
+.toggle {
+	--btn-bg: var(--secondary);
+	--btn-fg: var(--secondary-fg);
+
+	appearance: none;
+	cursor: pointer;
+
+	min-width: 2.5rem;
+	min-height: 2.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 8px 24px;
+	gap: 6px;
+
+	font-weight: bold;
+
+	border-radius: 6px;
+	background-color: var(--btn-bg);
+	color: var(--btn-fg);
+
+	scale: 100%;
+	transition: scale 100ms ease-out;
+
+	&:not(:disabled) {
+		&:hover {
+			background-color: color-mix(in oklab, var(--btn-bg) 80%, var(--base-bg));
+		}
+
+		&:active {
+			scale: 90%;
+			transition: none;
+		}
+	}
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.5;
+		box-shadow: none;
+	}
+
+	&.outlined {
+		--btn-bg: var(--input-bg);
+		--btn-fg: var(--input-fg);
+		border: solid 1px var(--input-border);
+		box-shadow: var(--input-shadow);
+		outline-offset: 0px !important;
+
+		&:not(:disabled):is(:hover, :focus-visible) {
+			background-color: var(--secondary);
+			color: var(--secondary-fg);
+		}
+	}
+
+	&.flat {
+		--btn-bg: transparent;
+		--btn-fg: currentColor;
+		--btn-ring: currentColor;
+
+		&:not(:disabled):is(:hover, :focus-visible) {
+			background-color: var(--secondary);
+			color: var(--secondary-fg);
+		}
+	}
+
+	&.solid {
+		--btn-bg: var(--secondary-fg);
+		--btn-fg: var(--secondary);
+		outline-offset: 2px;
+		box-shadow: var(--input-shadow);
+	}
+
+	&.primary {
+		--btn-bg: var(--primary);
+		--btn-fg: var(--primary-fg);
+		outline-offset: 2px;
+		box-shadow: var(--input-shadow);
+	}
+}
+
+.link {
+	color: var(--clr-accent);
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.btn-group {
+	display: flex;
+	gap: 1rem;
+
+	& > * {
+		flex: 1;
+	}
+}
+
+.text-btn {
+	cursor: pointer;
+	font-weight: bold;
+	text-wrap-mode: nowrap;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+	}
+}

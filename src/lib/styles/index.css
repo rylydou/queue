@@ -1,0 +1,140 @@
+@layer base, theme, components, utilities;
+
+@import "reset.css" layer(base);
+
+@import "vars.css" layer(theme);
+
+@import "components/button.css" layer(components);
+@import "components/dropdown.css" layer(components);
+@import "components/entry.css" layer(components);
+@import "components/form.css" layer(components);
+@import "components/separator.css" layer(components);
+@import "components/tab.css" layer(components);
+@import "components/toast.css" layer(components);
+@import "components/tooltip.css" layer(components);
+
+@import "fonts/hyperlegible.css";
+
+@layer theme {
+	html {
+		--font-sans: "hyperlegible", ui-sans-serif, sans-serif;
+		--font-mono: "JetBrains Mono", "Iosevka", "Fira Code", "Fira Mono", ui-monospace, monospace;
+	}
+}
+
+@layer base {
+	@keyframes focus-outline {
+		from {
+			outline-color: var(--primary);
+		}
+
+		to {
+			outline-color: color-mix(in oklab, var(--primary), white 10%);
+		}
+	}
+
+	html {
+		--focus-animation: infinite alternate ease-in-out 1s focus-outline;
+
+		user-select: none;
+
+		font-family: var(--font-sans);
+
+		background-color: var(--base-bg);
+		color: var(--base-fg);
+		accent-color: var(--primary);
+		caret-color: currentColor;
+	}
+
+	body {
+		overflow-x: hidden;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	:disabled {
+		filter: opacity(33%);
+	}
+
+	::selection {
+		background-color: var(--primary);
+		color: var(--primary-fg);
+	}
+
+	:focus-visible {
+		outline: solid 2px var(--primary);
+		outline-offset: 2px;
+		animation: var(--focus-animation);
+	}
+
+	::-webkit-scrollbar {
+		background-color: transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: var(--base-bg);
+		border: solid 4px var(--base-bg);
+		border-radius: 1rem;
+
+		&:hover {
+			background-color: var(--border);
+		}
+	}
+
+	.layout {
+		--padding: 2rem;
+		width: min(var(--width) - var(--padding) * 2, calc(100dvw - var(--padding) * 2));
+		margin-inline: auto;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.list-grid {
+		display: grid;
+		/* grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); */
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 24rem));
+		gap: 1rem;
+	}
+
+	@keyframes shake {
+		0% {
+			transform: translate(1px, 1px) rotate(0deg);
+		}
+		10% {
+			transform: translate(-1px, -2px) rotate(-1deg);
+		}
+		20% {
+			transform: translate(-3px, 0px) rotate(1deg);
+		}
+		30% {
+			transform: translate(3px, 2px) rotate(0deg);
+		}
+		40% {
+			transform: translate(1px, -1px) rotate(1deg);
+		}
+		50% {
+			transform: translate(-1px, 2px) rotate(-1deg);
+		}
+		60% {
+			transform: translate(-3px, 1px) rotate(0deg);
+		}
+		70% {
+			transform: translate(3px, 1px) rotate(-1deg);
+		}
+		80% {
+			transform: translate(-1px, -1px) rotate(1deg);
+		}
+		90% {
+			transform: translate(1px, 2px) rotate(0deg);
+		}
+		100% {
+			transform: translate(1px, -2px) rotate(-1deg);
+		}
+	}
+
+	.animate-shake {
+		animation: shake 500ms infinite;
+	}
+}

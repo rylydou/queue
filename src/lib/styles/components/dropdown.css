@@ -1,0 +1,30 @@
+.dropdown {
+	z-index: 100;
+	position: relative;
+
+	& > .dropdown-content {
+		z-index: 100;
+		position: absolute;
+		width: max-content;
+		display: none;
+		flex-direction: column;
+		padding: 6px;
+		border: solid 2px var(--clr-bg);
+		border-radius: 12px;
+		background-color: var(--clr-surface);
+		left: -6px;
+
+		& > * {
+			justify-content: start;
+			width: 100%;
+		}
+	}
+
+	&:hover,
+	&:has(> :focus),
+	&:has(:focus-visible) {
+		& > .dropdown-content {
+			display: flex;
+		}
+	}
+}

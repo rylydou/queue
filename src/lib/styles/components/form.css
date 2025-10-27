@@ -1,0 +1,54 @@
+.form {
+	width: 24rem;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+
+	& .labeled-entry {
+		display: flex;
+		flex-direction: column;
+
+		& > .label {
+			padding-bottom: 4px;
+			font-weight: bold;
+
+			& > .label-note {
+				font-size: 14px;
+				font-weight: normal;
+				font-style: italic;
+
+				color: var(--muted-fg);
+				opacity: 0;
+			}
+		}
+
+		&:focus-within {
+			& > .label > .label-note {
+				opacity: 1;
+			}
+		}
+	}
+
+	/* & .message {
+		min-height: 2rem;
+		user-select: text;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 12px;
+		font-weight: bold;
+		border: solid 2px var(--clr-warn-fg);
+		border-radius: 12px;
+		background-color: var(--clr-warn-bg);
+		color: var(--clr-warn-fg);
+
+		&:empty {
+			opacity: 0;
+		}
+	} */
+}
+
+/* .form-tabbed {
+	min-height: 30rem;
+} */

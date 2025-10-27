@@ -1,0 +1,115 @@
+.tooltip-anchor {
+	position: relative;
+}
+
+.tooltip,
+[class^="tooltip-"] {
+	--tooltip-delay: 250ms;
+	--tooltip-in-duration: 100ms;
+	--tooltip-out-duration: 100ms;
+
+	z-index: 999;
+	position: absolute;
+	top: 0px;
+
+	width: max-content;
+	padding: 6px 8px;
+
+	border-radius: 6px;
+	box-shadow: 0 4px 8px var(--clr-shadow);
+
+	&,
+	&::after {
+		pointer-events: none;
+		isolation: isolate;
+		opacity: 0%;
+
+		left: 50%;
+		translate: -50% -32px;
+
+		font-weight: normal;
+		font-family: var(--font-sans);
+		background-color: var(--popover-bg);
+		border: solid 1px var(--border);
+		color: var(--popover-fg);
+		scale: 90%;
+
+		transition:
+			opacity var(--tooltip-out-duration),
+			scale var(--tooltip-out-duration);
+	}
+
+	&::after {
+		content: attr(data-tooltip);
+
+		z-index: 998;
+		position: absolute;
+		top: 0px;
+
+		width: max-content;
+		padding: 6px 8px;
+
+		border-radius: 6px;
+		box-shadow: 0 4px 8px var(--clr-shadow);
+	}
+}
+
+:not(:disabled):is(
+	:has(.tooltip-trigger:is(:hover, :focus-visible)),
+	:not(:has(.tooltip-trigger)):is(:hover, :focus-visible)
+) {
+	&::before,
+	&::after {
+		opacity: 100%;
+		scale: 100%;
+		transition:
+			opacity var(--tooltip-in-duration) var(--tooltip-delay),
+			scale var(--tooltip-in-duration) var(--tooltip-delay);
+	}
+}
+
+/* [data-tooltip] {
+	--tooltip-delay: 250ms;
+	--tooltip-in-duration: 100ms;
+	--tooltip-out-duration: 100ms;
+
+	position: relative;
+
+	&::before,
+	&::after {
+		pointer-events: none;
+		isolation: isolate;
+		opacity: 0%;
+
+		left: 50%;
+		translate: -50% -32px;
+
+		font-weight: normal;
+		font-family: var(--font-sans);
+		background-color: var(--popover-bg);
+		border: solid 1px var(--border);
+		color: var(--popover-fg);
+		scale: 90%;
+
+		transition:
+			opacity var(--tooltip-out-duration),
+			scale var(--tooltip-out-duration);
+	}
+
+	&::before {
+		content: "";
+
+		z-index: 9999;
+		position: absolute;
+		top: 22px;
+		rotate: 45deg;
+
+		width: 12px;
+		height: 12px;
+
+		border-left: none;
+		border-top: none;
+		border-top-left-radius: 99rem;
+		box-shadow: 4px 4px 4px var(--clr-shadow);
+	}
+} */

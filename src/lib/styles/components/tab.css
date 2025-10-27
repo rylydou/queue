@@ -1,0 +1,52 @@
+.tab-bar,
+[class^="tab-bar-"] {
+	display: flex;
+	justify-content: stretch;
+	align-items: stretch;
+	padding: 4px;
+	border-radius: var(--radius);
+	background-color: var(--muted);
+	color: var(--muted-fg);
+
+	& > .tab-item {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 3px 12px;
+		border-radius: calc(var(--radius) - 4px);
+		font-weight: bold;
+		outline-offset: 0;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--card-fg);
+		}
+
+		&.current,
+		&[aria-current]:not([aria-current="false"]) {
+			border: solid 1px var(--input-border);
+			background-color: var(--input-bg);
+			color: var(--base-fg);
+			box-shadow: var(--input-shadow);
+
+			.primary & {
+				border: none;
+				background-color: var(--primary);
+				color: var(--primary-fg);
+				outline-offset: 2px;
+			}
+		}
+	}
+
+	&.big {
+		padding: 6px;
+		border-radius: var(--radius);
+		font-size: 14px;
+
+		& > .tab-item {
+			padding: 6px 24px;
+			border-radius: calc(var(--radius) - 4px);
+		}
+	}
+}
