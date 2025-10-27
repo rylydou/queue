@@ -1,8 +1,27 @@
-import type { QueueItemData } from "$lib/types";
+import type { ItemID, QueueItemData } from "$lib/types";
+import type { Emitter } from "sveltekit-sse";
+
+export const sseListeners = new Set<Emitter>();
 
 export let current: QueueItemData | null = null;
 export let holdQueue: QueueItemData[] = [];
 export let nextQueue: QueueItemData[] = [];
+
+// To optimize
+export let itemMap = new Map<ItemID, QueueItemData>();
+
+export const patchItem = (id: ItemID, patch: Partial<QueueItemData>) => {
+	let data = itemMap.get(id);
+
+	// switch (data?.id)
+
+	if (!data) {
+		console.error(`[PATCH] Failed to patch item. Item with id ${id} not found.`);
+		return;
+	}
+	Object.assign(data, patch);
+	// TODO emit changes to listeners
+};
 
 current = {
 	id: "abcggg",

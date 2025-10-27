@@ -58,6 +58,7 @@ export default defineConfig({
 		// prettier-ignore
 		breakpoints: {
 			"md": "48rem",
+			"lg": "52rem",
 		},
 	},
 	rules: [

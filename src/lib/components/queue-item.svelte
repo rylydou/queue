@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from "$lib/common/toasts";
-	import { queues } from "$lib/stores/queue.svelte";
+	import { doc } from "$lib/stores/app.svelte";
 	import type { QueueItemData } from "$lib/types";
 	import dayjs from "dayjs";
 	import plugin from "dayjs/plugin/relativeTime";
@@ -40,7 +40,7 @@
 		<h3 class="relative self-end font-bold text-lg md:text-2xl text-wrap">
 			{#if props.placement > 0}
 				<div
-					class="absolute pointer-events-none -left-2 -translate-x-full font-normal opacity-0 group-hover:opacity-25"
+					class="absolute pointer-events-none text-base lg:text-2xl bottom-0.25 lg:bottom-0 -left-1 lg:-left-2 -translate-x-full font-normal opacity-0 group-hover:opacity-25"
 				>
 					#{props.placement}
 				</div>
@@ -68,11 +68,11 @@
 							window.scroll({ top: 0, behavior: "auto" });
 							// window.scrollTo({ top: 0, behavior: "smooth" });
 							if (props.data.status == "hold") {
-								queues.holdQueue.splice(queues.holdQueue.indexOf(props.data), 1);
+								doc.holdQueue.splice(doc.holdQueue.indexOf(props.data), 1);
 							} else if (props.data.status == "queue") {
-								queues.nextQueue.splice(queues.nextQueue.indexOf(props.data), 1);
+								doc.nextQueue.splice(doc.nextQueue.indexOf(props.data), 1);
 							}
-							queues.current = props.data;
+							doc.current = props.data;
 							props.data.status = "current";
 						}}
 					>
@@ -85,8 +85,8 @@
 						onclick={() => {
 							toast(`Removed "${props.data.title}" from hold`);
 							props.data.status = "queue";
-							queues.nextQueue.unshift(props.data);
-							queues.holdQueue.splice(queues.holdQueue.indexOf(props.data), 1);
+							doc.nextQueue.unshift(props.data);
+							doc.holdQueue.splice(doc.holdQueue.indexOf(props.data), 1);
 						}}
 					>
 						Unhold
@@ -97,10 +97,10 @@
 						onclick={() => {
 							toast(`Put "${props.data.title}" on hold`);
 							props.data.status = "hold";
-							queues.holdQueue.push(props.data);
-							queues.nextQueue.splice(queues.nextQueue.indexOf(props.data), 1);
+							doc.holdQueue.push(props.data);
+							doc.nextQueue.splice(doc.nextQueue.indexOf(props.data), 1);
 							if (props.data.status == "hold") {
-								queues.current = null;
+								doc.current = null;
 							}
 						}}
 					>
@@ -120,11 +120,11 @@
 						}
 
 						if (props.data.status == "hold") {
-							queues.holdQueue.splice(queues.holdQueue.indexOf(props.data), 1);
+							doc.holdQueue.splice(doc.holdQueue.indexOf(props.data), 1);
 						} else if (props.data.status == "queue") {
-							queues.nextQueue.splice(queues.nextQueue.indexOf(props.data), 1);
+							doc.nextQueue.splice(doc.nextQueue.indexOf(props.data), 1);
 						} else if (props.data.status == "current") {
-							queues.current = null;
+							doc.current = null;
 						}
 					}}
 				>

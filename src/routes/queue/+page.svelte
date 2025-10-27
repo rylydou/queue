@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { QueueItem } from "$lib/components";
-	import { queues } from "$lib/stores/queue.svelte";
+	import { doc } from "$lib/stores/app.svelte";
 	import { flip } from "svelte/animate";
 	import { backOut } from "svelte/easing";
 	import { fly, scale } from "svelte/transition";
@@ -9,11 +9,11 @@
 
 	let { data }: PageProps = $props();
 
-	queues.current = data.current;
-	queues.holdQueue = data.holdQueue;
-	queues.nextQueue = data.nextQueue;
+	doc.current = data.current;
+	doc.holdQueue = data.holdQueue;
+	doc.nextQueue = data.nextQueue;
 
-	const queueSize = $derived(queues.holdQueue.length + queues.nextQueue.length + (queues.current ? 1 : 0));
+	const queueSize = $derived(doc.holdQueue.length + doc.nextQueue.length + (doc.current ? 1 : 0));
 </script>
 
 <svelte:head>
@@ -30,16 +30,19 @@
 	</header>
 
 	<div class="mt-12 flex-col min-h-[10rem]">
-		<div class="font-bold">Currently playing...</div>
-		{#key queues.current?.id}
+		<div class="flex-row justify-between">
+			<div class="font-bold">Currently playing...</div>
+			<a class="hover:underline" href="/archive">See previous games...</a>
+		</div>
+		{#key doc.current?.id}
 			<div class="relative h-full flex-1">
 				<div
 					class="isolate absolute inset-0 will-change-transform"
 					in:scale={{ duration: 500, delay: 200, opacity: 0, start: 0.75, easing: backOut }}
 					out:fly={{ duration: 200, opacity: 0, x: 300, y: 0 }}
 				>
-					{#if queues.current}
-						<QueueItem data={queues.current} myGame={false} placement={0} />
+					{#if doc.current}
+						<QueueItem data={doc.current} myGame={false} placement={0} />
 					{:else}
 						<div class="text-center opacity-50 mt-12">Nothing at the moment...</div>
 					{/if}
@@ -48,7 +51,7 @@
 		{/key}
 	</div>
 
-	{#if queues.holdQueue.length > 0}
+	{#if doc.holdQueue.length > 0}
 		<div class="mt-8 flex-col text-amber-600">
 			<div class="flex">
 				<div class="flex-1 font-bold">On hold:</div>
@@ -57,7 +60,7 @@
 				</div> -->
 			</div>
 			<ol class="layout list-none">
-				{#each queues.holdQueue as item, index (item.id)}
+				{#each doc.holdQueue as item, index (item.id)}
 					<li
 						class="will-change-transform"
 						animate:flip={{ duration: 200 }}
@@ -71,18 +74,18 @@
 		</div>
 	{/if}
 
-	{#if queues.nextQueue.length > 0}
+	{#if doc.nextQueue.length > 0}
 		<div class="mt-8 flex-col">
 			<div class="font-bold">Up next:</div>
 			<ol class="layout list-none">
-				{#each queues.nextQueue as item, index (item.id)}
+				{#each doc.nextQueue as item, index (item.id)}
 					<li
 						class="will-change-transform"
 						animate:flip={{ duration: 200 }}
 						in:scale={{ duration: 200, opacity: 0, start: 0.75, delay: 200 }}
 						out:scale={{ duration: 200, opacity: 0, start: 0.75 }}
 					>
-						<QueueItem data={item} myGame={false} placement={queues.holdQueue.length + index + 1} />
+						<QueueItem data={item} myGame={false} placement={doc.holdQueue.length + index + 1} />
 					</li>
 				{/each}
 			</ol>

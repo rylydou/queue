@@ -17,7 +17,7 @@
 		"@iconify/tools": "^4.1.4",
 		"@iconify/utils": "^3.0.2",
 		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/kit": "^2.47.3",
+		"@sveltejs/kit": "^2.48.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@trpc/client": "^11.7.0",
 		"@trpc/server": "^11.7.0",

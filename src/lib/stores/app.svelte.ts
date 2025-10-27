@@ -1,12 +1,10 @@
 import type { QueueItemData } from "$lib/types";
 
-const queues = $state({
+export const doc = $state({
 	current: null as QueueItemData | null,
 	holdQueue: [] as QueueItemData[],
 	nextQueue: [] as QueueItemData[],
 });
-
-export { queues };
 
 // export let current = $state<QueueItemData | null>(null);
 
