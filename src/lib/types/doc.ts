@@ -1,6 +1,7 @@
 export type QueueItemData = {
-	id: ItemID;
+	id: QueueItemID;
 	submittedAt: Date;
+	afterID?: QueueItemID;
 
 	status: QueueItemStatus;
 	statusChangedAt: Date;
@@ -14,4 +15,4 @@ export type QueueItemData = {
 
 export type QueueItemStatus = "queue" | "hold" | "current" | "done";
 
-export type ItemID = string;
+export type QueueItemID = string;

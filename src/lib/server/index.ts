@@ -10,9 +10,11 @@ export const lowerAlpha = "abcdefghijklmnopqrstuvwxyz";
 export const upperAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const digits = "0123456789";
 
-export const alphaID = idGenerator(lowerAlpha, 6);
-export const alphanumID = idGenerator(lowerAlpha + digits, 4);
-export const alphanumcaseID = idGenerator(lowerAlpha + upperAlpha + digits, 16);
+export const alphaID = idGenerator(lowerAlpha, 8);
+export const alphanumID = idGenerator(lowerAlpha + digits, 8);
+export const alphanumcaseID = idGenerator(lowerAlpha + upperAlpha + digits, 8);
+export const base64ID = idGenerator(lowerAlpha + upperAlpha + digits + "_-", 8);
+export const urlID = idGenerator(lowerAlpha + upperAlpha + digits + "_-~.", 8);
 
 export const newUserID = idGenerator(lowerAlpha + upperAlpha + digits, 12);
 export const newSessionToken = idGenerator(lowerAlpha + upperAlpha + digits, sessionTokenLength);

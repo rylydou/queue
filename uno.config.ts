@@ -57,6 +57,7 @@ export default defineConfig({
 		},
 		// prettier-ignore
 		breakpoints: {
+			"sm": "40rem",
 			"md": "48rem",
 			"lg": "52rem",
 		},
@@ -67,7 +68,6 @@ export default defineConfig({
 			function* ([], { symbols }) {
 				yield {
 					display: "grid",
-					"place-content": "center",
 				};
 				yield {
 					[symbols.selector]: (selector) => `${selector}>*`,

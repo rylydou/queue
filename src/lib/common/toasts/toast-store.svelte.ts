@@ -19,11 +19,15 @@ export const toast = (
 	{
 		description,
 		actions,
+		time,
 	}: {
 		description?: string;
 		actions?: ToastAction | ToastAction[];
+		time?: number;
 	} = {},
 ) => {
+	time ||= 5000;
+
 	if (actions && !Array.isArray(actions)) {
 		actions = [actions];
 	}
@@ -37,8 +41,10 @@ export const toast = (
 
 	toasts.unshift(toast);
 
-	setTimeout(() => {
-		const toastIndex = toasts.findIndex((t) => t.id === toast.id);
-		toasts.splice(toastIndex, 1);
-	}, 5000);
+	if (time > 0) {
+		setTimeout(() => {
+			const toastIndex = toasts.findIndex((t) => t.id === toast.id);
+			toasts.splice(toastIndex, 1);
+		}, time);
+	}
 };

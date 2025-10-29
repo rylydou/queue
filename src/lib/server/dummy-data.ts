@@ -1,30 +1,8 @@
-import type { ItemID, QueueItemData } from "$lib/types";
-import type { Emitter } from "sveltekit-sse";
+import type { QueueItemData } from "$lib/types";
+import { urlID as newItemID } from ".";
 
-export const sseListeners = new Set<Emitter>();
-
-export let current: QueueItemData | null = null;
-export let holdQueue: QueueItemData[] = [];
-export let nextQueue: QueueItemData[] = [];
-
-// To optimize
-export let itemMap = new Map<ItemID, QueueItemData>();
-
-export const patchItem = (id: ItemID, patch: Partial<QueueItemData>) => {
-	let data = itemMap.get(id);
-
-	// switch (data?.id)
-
-	if (!data) {
-		console.error(`[PATCH] Failed to patch item. Item with id ${id} not found.`);
-		return;
-	}
-	Object.assign(data, patch);
-	// TODO emit changes to listeners
-};
-
-current = {
-	id: "abcggg",
+export const current: QueueItemData = {
+	id: newItemID(),
 	submittedAt: new Date("10/25/2025"),
 	url: "https://itch.io/the-great-escape",
 	title: "Three's a Crime",
@@ -35,9 +13,9 @@ current = {
 	statusChangedAt: new Date(),
 };
 
-holdQueue = [
+export const holdQueue: QueueItemData[] = [
 	{
-		id: "gmr74",
+		id: newItemID(),
 		submittedAt: new Date("11/15/2025"),
 		url: "https://itch.io/dream-diver",
 		title: "Dream Diver: Labyrinth of Sleep",
@@ -48,7 +26,7 @@ holdQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "qwe19",
+		id: newItemID(),
 		submittedAt: new Date("07/01/2025"),
 		url: "https://itch.io/baker-battle",
 		title: "The Great Baker Battle",
@@ -59,7 +37,7 @@ holdQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "poi36",
+		id: newItemID(),
 		submittedAt: new Date("12/20/2025"),
 		url: "https://itch.io/star-ship-builder",
 		title: "Star Ship Builder Tycoon",
@@ -71,9 +49,9 @@ holdQueue = [
 	},
 ];
 
-nextQueue = [
+export const nextQueue: QueueItemData[] = [
 	{
-		id: "def02",
+		id: newItemID(),
 		submittedAt: new Date("09/15/2025"),
 		url: "https://itch.io/pixel-adventure",
 		title: "Pixel Adventure RPG",
@@ -84,7 +62,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "ghi83",
+		id: newItemID(),
 		submittedAt: new Date("11/01/2025"),
 		url: "https://itch.io/cosmic-drift",
 		title: "Cosmic Drift",
@@ -95,7 +73,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "jkl54",
+		id: newItemID(),
 		submittedAt: new Date("10/10/2025"),
 		url: "https://itch.io/shadow-runner",
 		title: "Shadow Runner 2077",
@@ -106,7 +84,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "mno15",
+		id: newItemID(),
 		submittedAt: new Date("08/20/2025"),
 		url: "https://itch.io/frog-farmer",
 		title: "Frog Farmer Sim",
@@ -117,7 +95,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "pqr96",
+		id: newItemID(),
 		submittedAt: new Date("12/05/2025"),
 		url: "https://itch.io/wizard-tower",
 		title: "Wizard Tower Defense",
@@ -128,7 +106,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "stu77",
+		id: newItemID(),
 		submittedAt: new Date("10/28/2025"),
 		url: "https://itch.io/neon-racer",
 		title: "Neon Racer Arcade",
@@ -139,7 +117,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "zxc50",
+		id: newItemID(),
 		submittedAt: new Date("10/05/2025"),
 		url: "https://itch.io/deep-sea-diver",
 		title: "Deep Sea Diver 3000",
@@ -150,7 +128,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "vbn11",
+		id: newItemID(),
 		submittedAt: new Date("09/28/2025"),
 		url: "https://itch.io/cryptid-photos",
 		title: "Cryptid Photo Hunt",
@@ -161,7 +139,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "rty22",
+		id: newItemID(),
 		submittedAt: new Date("08/10/2025"),
 		url: "https://itch.io/robot-pals",
 		title: "Robot Pals: The Adventure",
@@ -172,7 +150,7 @@ nextQueue = [
 		statusChangedAt: new Date(),
 	},
 	{
-		id: "fgh63",
+		id: newItemID(),
 		submittedAt: new Date("11/29/2025"),
 		url: "https://itch.io/submittedAt-loop-puzzle",
 		title: "The Chronos Conundrum",

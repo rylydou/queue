@@ -17,6 +17,7 @@
 
 @layer theme {
 	html {
+		--padding: 1rem;
 		--font-sans: "hyperlegible", ui-sans-serif, sans-serif;
 		--font-mono: "JetBrains Mono", "Iosevka", "Fira Code", "Fira Mono", ui-monospace, monospace;
 	}
@@ -44,6 +45,7 @@
 		color: var(--base-fg);
 		accent-color: var(--primary);
 		caret-color: currentColor;
+		scroll-behavior: smooth;
 	}
 
 	body {
@@ -84,7 +86,6 @@
 	}
 
 	.layout {
-		--padding: 2rem;
 		width: min(var(--width) - var(--padding) * 2, calc(100dvw - var(--padding) * 2));
 		margin-inline: auto;
 		display: flex;

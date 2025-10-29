@@ -1,9 +1,8 @@
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vite";
-
-// import UnoCSS from "@unocss/svelte-scoped/vite";
 import UnoCSS from "@unocss/vite";
+import { defineConfig } from "vite";
+import devtoolsJson from "vite-plugin-devtools-json";
 
 export default defineConfig({
-	plugins: [UnoCSS(), sveltekit()],
+	plugins: [UnoCSS(), sveltekit(), devtoolsJson()],
 });

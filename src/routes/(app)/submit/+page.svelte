@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { toast } from "$lib";
 	import type { PageProps } from "./$types";
 
 	let { data }: PageProps = $props();
+
+	let isWaiting = $state(false);
 </script>
 
 <svelte:head>
@@ -13,8 +16,22 @@
 	<form
 		class="form center-form"
 		method="post"
+		action="?/submit"
 		use:enhance={() => {
-			return async ({ result }) => {};
+			isWaiting = true;
+
+			return async ({ result }) => {
+				isWaiting = false;
+
+				switch (result.type) {
+					case "failure":
+						toast("Failed to submit your game.", { description: result.data as unknown as string, time: 10000 });
+						break;
+					case "error":
+						toast("Error submitting your game.", { description: result.status + " - " + result.error, time: 10000 });
+						break;
+				}
+			};
 		}}
 	>
 		<h1 class="mb-4 text-lg text-center font-bold">Submit your game for us to play on stream!</h1>
@@ -40,6 +57,6 @@
 			<!-- <input class="entry" type="text" name="madeBy" autocomplete="off" spellcheck="false" /> -->
 		</label>
 
-		<button class="btn solid mt-4" type="submit"> Submit </button>
+		<button class="btn solid mt-4" type="submit" disabled={isWaiting}> Submit </button>
 	</form>
 </main>

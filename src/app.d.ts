@@ -10,11 +10,9 @@ declare global {
 		interface Locals {
 			auth?: Auth;
 		}
-		interface PageData {
-			user: AuthUser;
-		}
-		// interface PageState {}
-		// interface Platform {}
+		interface PageData {}
+		interface PageState {}
+		interface Platform {}
 	}
 }
 

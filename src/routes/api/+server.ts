@@ -1,22 +1,21 @@
-import { sseListeners } from "$lib/server/queue";
+import * as doc from "$lib/server/doc";
 import { type RequestHandler } from "@sveltejs/kit";
-import { produce } from "sveltekit-sse";
 // import type { RequestHandler } from "./$types";
 
-export const PATCH: RequestHandler = async ({}) => {
+export const PATCH: RequestHandler = async ({ locals, request }) => {
+	const data = await request.json();
+	doc.patchItem(data);
 	return new Response(null, { status: 200 });
 };
 
-export function POST({ getClientAddress }) {
-	return produce(async ({ emit }) => {
-		const address = getClientAddress();
-		console.log("[SSE] New listener:", address);
-		sseListeners.add(emit);
+export const POST: RequestHandler = async ({ locals, request }) => {
+	const data = await request.json();
+	doc.createItem(data);
+	return new Response(null, { status: 201 });
+};
 
-		return () => {
-			// Cleanup
-			console.log("[SSE] Listener disconnected:", address);
-			sseListeners.delete(emit);
-		};
-	});
-}
+export const DELETE: RequestHandler = async ({ locals, request }) => {
+	const data = await request.text();
+	doc.deleteItem(data);
+	return new Response(null, { status: 200 });
+};
