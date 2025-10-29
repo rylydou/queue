@@ -2,7 +2,7 @@ import z from "zod";
 import type { Actions } from "./$types";
 import { fail } from "@sveltejs/kit";
 import { createItem, nextQueue } from "$lib/server/doc";
-import { urlID } from "$lib/server";
+import { newUrlID } from "$lib/server";
 
 const schema = z.object({
 	url: z
@@ -34,7 +34,7 @@ export const actions = {
 		}
 		console.log("[SUBMIT] A viewer submitted a game");
 		createItem({
-			id: urlID(),
+			id: newUrlID(),
 			status: "queue",
 			afterID: nextQueue.at(-1)?.id,
 			submittedAt: new Date(),

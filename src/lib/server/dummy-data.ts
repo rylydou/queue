@@ -1,5 +1,5 @@
 import type { QueueItemData } from "$lib/types";
-import { urlID as newItemID } from ".";
+import { newUrlID as newItemID } from ".";
 
 export const current: QueueItemData = {
 	id: newItemID(),

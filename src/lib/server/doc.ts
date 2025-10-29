@@ -1,8 +1,7 @@
 import type { QueueItemData, QueueItemID } from "$lib/types";
 import type { Emitter } from "sveltekit-sse";
 import * as dummyData from "./dummy-data";
-
-export const sseListeners = new Set<Emitter>();
+import { statusListeners, queueListeners } from "./sse";
 
 export let current: QueueItemData | null = null;
 export let holdQueue: QueueItemData[] = [];
@@ -45,6 +44,10 @@ export const createItem = (data: QueueItemData) => {
 				deleteItem(current.id);
 			}
 			current = data;
+
+			for (const emit of statusListeners.values()) {
+				emit("current", JSON.stringify(current));
+			}
 			break;
 		case "hold":
 			{
@@ -66,7 +69,7 @@ export const createItem = (data: QueueItemData) => {
 			break;
 	}
 
-	for (const emit of sseListeners.values()) {
+	for (const emit of queueListeners.values()) {
 		emit("create", JSON.stringify(data));
 	}
 };
@@ -117,6 +120,10 @@ export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "i
 					deleteItem(current.id);
 				}
 				current = item;
+
+				for (const emit of statusListeners.values()) {
+					emit("current", JSON.stringify(current));
+				}
 				break;
 			case "hold":
 				{
@@ -169,7 +176,7 @@ export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "i
 		}
 	}
 
-	for (const emit of sseListeners.values()) {
+	for (const emit of queueListeners.values()) {
 		emit("patch", JSON.stringify(patch));
 	}
 };
@@ -187,6 +194,10 @@ export const deleteItem = (id: QueueItemID) => {
 	switch (item.status) {
 		case "current":
 			current = null;
+
+			for (const emit of statusListeners.values()) {
+				emit("current", "null");
+			}
 			break;
 		case "hold":
 			holdQueue.splice(
@@ -204,7 +215,7 @@ export const deleteItem = (id: QueueItemID) => {
 
 	itemMap.delete(id);
 
-	for (const emit of sseListeners.values()) {
+	for (const emit of queueListeners.values()) {
 		emit("delete", id);
 	}
 };
