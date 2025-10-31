@@ -1,16 +1,16 @@
 export type QueueItemData = {
 	id: QueueItemID;
-	submittedAt: Date;
+	submittedAt: Date | string;
 	afterID?: QueueItemID;
 
 	status: QueueItemStatus;
-	statusChangedAt: Date;
+	statusChangedAt: Date | string;
 
 	url: string;
 	title: string;
 	by: string;
 	note: string;
-	infoChangedAt: Date;
+	infoChangedAt: Date | string;
 };
 
 export type QueueItemStatus = "queue" | "hold" | "current" | "done";

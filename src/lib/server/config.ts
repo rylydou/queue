@@ -2,6 +2,7 @@ import { env } from "$env/dynamic/private";
 import { config } from "dotenv";
 import { idGenerator } from "./nanoid";
 import type { StringValue } from "ms";
+import path from "path";
 
 config();
 
@@ -15,3 +16,5 @@ const jwtSecretGenerator = idGenerator(
 export const jwtSecret = jwtSecretGenerator();
 export const jwtTimeToLive = (env.JWT_TTL || "1h") as StringValue;
 export const jwtSaltRounds = Number(env.JWT_SALT_ROUNDS) || 6;
+
+export const dataPath = env.DATA_PATH || "./data";

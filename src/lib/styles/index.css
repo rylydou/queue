@@ -20,6 +20,9 @@
 		--padding: 1rem;
 		--font-sans: "hyperlegible", ui-sans-serif, sans-serif;
 		--font-mono: "JetBrains Mono", "Iosevka", "Fira Code", "Fira Mono", ui-monospace, monospace;
+		@media screen and (min-width: 40rem) {
+			--padding: 2rem;
+		}
 	}
 }
 

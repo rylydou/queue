@@ -1,7 +1,7 @@
 import type { QueueItemData, QueueItemID } from "$lib/types";
-import type { Emitter } from "sveltekit-sse";
 import * as dummyData from "./dummy-data";
-import { statusListeners, queueListeners } from "./sse";
+import { queueListeners, statusListeners } from "./sse";
+import * as config from "./config";
 
 export let current: QueueItemData | null = null;
 export let holdQueue: QueueItemData[] = [];
@@ -9,22 +9,28 @@ export let nextQueue: QueueItemData[] = [];
 
 export let itemMap = new Map<QueueItemID, QueueItemData>();
 
-// export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "id">) => {
-// 	console.log("[DOC] Patching item: ", patch.id);
+export const saveData = async () => {
+	const dataFile = Bun.file(config.dataPath);
+	dataFile.write(
+		JSON.stringify({
+			current: current,
+			holdQueue: holdQueue,
+			nextQueue: nextQueue,
+		}),
+	);
+};
 
-// 	let data = itemMap.get(patch.id);
+export const loadData = async () => {
+	const dataFile = Bun.file(config.dataPath);
+	if (!dataFile.exists()) {
+		return;
+	}
 
-// 	if (!data) {
-// 		console.error(`[DOC] Failed to patch item. Item with id ${patch.id} not found.`);
-// 		return;
-// 	}
-
-// 	Object.assign(data, patch);
-
-// 	for (const emit of sseListeners.values()) {
-// 		emit("patch", JSON.stringify(patch));
-// 	}
-// };
+	const data = await dataFile.json();
+	current = data.current || null;
+	holdQueue = data.holdQueue || [];
+	nextQueue = data.nextQueue || [];
+};
 
 // TODO: Archive item
 export const createItem = (data: QueueItemData) => {
