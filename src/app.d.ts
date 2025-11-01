@@ -9,6 +9,7 @@ declare global {
 		}
 		interface Locals {
 			auth?: Auth;
+			isMod: boolean;
 		}
 		interface PageData {}
 		interface PageState {}

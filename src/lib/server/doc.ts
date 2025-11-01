@@ -1,35 +1,53 @@
 import type { QueueItemData, QueueItemID } from "$lib/types";
-import * as dummyData from "./dummy-data";
-import { queueListeners, statusListeners } from "./sse";
+import { file } from "bun";
 import * as config from "./config";
+import { queueListeners, statusListeners } from "./sse";
+import path from "path";
 
 export let current: QueueItemData | null = null;
 export let holdQueue: QueueItemData[] = [];
 export let nextQueue: QueueItemData[] = [];
 
+export let acceptingSubmissions = true;
+
 export let itemMap = new Map<QueueItemID, QueueItemData>();
 
+const queueFilePath = path.join(config.dataPath, "queues", "main.json");
+
 export const saveData = async () => {
-	const dataFile = Bun.file(config.dataPath);
+	console.log("Saving data...");
+	const dataFile = file(queueFilePath);
 	dataFile.write(
 		JSON.stringify({
-			current: current,
-			holdQueue: holdQueue,
-			nextQueue: nextQueue,
+			current,
+			holdQueue,
+			nextQueue,
+			acceptingSubmissions,
 		}),
 	);
 };
 
 export const loadData = async () => {
-	const dataFile = Bun.file(config.dataPath);
+	const dataFile = Bun.file(queueFilePath);
 	if (!dataFile.exists()) {
+		console.log("No existing data found.");
 		return;
 	}
+
+	console.log("Found existing data!");
 
 	const data = await dataFile.json();
 	current = data.current || null;
 	holdQueue = data.holdQueue || [];
 	nextQueue = data.nextQueue || [];
+	acceptingSubmissions = data.acceptingSubmissions || true;
+
+	itemMap.clear();
+	for (const item of [current, ...holdQueue, ...nextQueue]) {
+		if (item) {
+			itemMap.set(item.id, item);
+		}
+	}
 };
 
 // TODO: Archive item
@@ -226,17 +244,6 @@ export const deleteItem = (id: QueueItemID) => {
 	}
 };
 
-current = dummyData.current;
-current.title =
-	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et";
-current.by = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et";
-current.note =
-	"Lorem ipsum dolor sit amet ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et collaudata est, cum id, quod maxime placeat,";
-holdQueue = dummyData.holdQueue;
-// nextQueue = dummyData.nextQueue;
+loadData();
 
-for (const item of [current, ...holdQueue, ...nextQueue]) {
-	if (item) {
-		itemMap.set(item.id, item);
-	}
-}
+process.on("exit", () => saveData());

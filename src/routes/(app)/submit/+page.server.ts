@@ -1,8 +1,29 @@
-import z from "zod";
-import type { Actions } from "./$types";
-import { fail } from "@sveltejs/kit";
-import { createItem, nextQueue } from "$lib/server/doc";
 import { newUrlID } from "$lib/server";
+import * as doc from "$lib/server/doc";
+import { createItem, nextQueue } from "$lib/server/doc";
+import { fail, redirect } from "@sveltejs/kit";
+import z from "zod";
+import type { PageServerLoad } from "../queue/$types";
+import type { Actions } from "./$types";
+import { stat } from "fs";
+
+export type Status = "open" | "closed" | "full";
+
+export const load = (async ({ locals }) => {
+	let status: Status = "open";
+
+	// Mods can bypass limits
+	if (!locals.isMod) {
+		if (!doc.acceptingSubmissions) {
+			status = "closed";
+		} else if (false) {
+			// TODO: ^ Full check
+			status = "full";
+		}
+	}
+
+	return { status };
+}) satisfies PageServerLoad;
 
 const schema = z.object({
 	url: z
@@ -42,5 +63,7 @@ export const actions = {
 			statusChangedAt: new Date(),
 			...data,
 		});
+
+		throw redirect(303, "/queue");
 	},
 } satisfies Actions;
