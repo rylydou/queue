@@ -1,6 +1,8 @@
 import { idGenerator } from "./nanoid";
 
+export * as auth from "./auth";
 export * as serverConfig from "./config";
+export * as doc from "./doc";
 export * from "./nanoid";
 
 export const lowerAlpha = "abcdefghijklmnopqrstuvwxyz";

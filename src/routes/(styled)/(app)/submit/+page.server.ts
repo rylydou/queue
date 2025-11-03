@@ -1,11 +1,10 @@
 import { newUrlID } from "$lib/server";
 import * as doc from "$lib/server/doc";
-import { createItem, nextQueue } from "$lib/server/doc";
+import { createItem } from "$lib/server/doc";
 import { fail, redirect } from "@sveltejs/kit";
 import z from "zod";
 import type { PageServerLoad } from "../queue/$types";
 import type { Actions } from "./$types";
-import { stat } from "fs";
 
 export type Status = "open" | "closed" | "full";
 
@@ -14,10 +13,9 @@ export const load = (async ({ locals }) => {
 
 	// Mods can bypass limits
 	if (!locals.isMod) {
-		if (!doc.acceptingSubmissions) {
+		if (!doc.config.acceptingSubmissions) {
 			status = "closed";
-		} else if (false) {
-			// TODO: ^ Full check
+		} else if (doc.itemMap.size >= doc.config.maxQueueSize || doc.queue.submissionCount >= doc.config.maxSubmissions) {
 			status = "full";
 		}
 	}
@@ -50,14 +48,13 @@ export const actions = {
 		const formData = Object.fromEntries(await request.formData());
 		const { data, error } = schema.safeParse(formData);
 		if (error) {
-			console.warn("[SUBMIT] Invalid form:", error.message, "\n", formData);
 			return fail(400, error.issues.map((i) => i.message).join(", "));
 		}
 		console.log("[SUBMIT] A viewer submitted a game");
 		createItem({
 			id: newUrlID(),
 			status: "queue",
-			afterID: nextQueue.at(-1)?.id,
+			afterID: doc.queue.nextQueue.at(-1)?.id,
 			submittedAt: new Date(),
 			infoChangedAt: new Date(),
 			statusChangedAt: new Date(),

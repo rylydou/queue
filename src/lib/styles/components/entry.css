@@ -13,10 +13,14 @@
 		text-transform: none;
 	}
 
-	&:focus {
-		/* outline: solid 2px; */
-		/* outline-color: var(--primary); */
+	&:focus,
+	&:focus-within {
+		outline: solid 2px var(--primary);
 		outline-offset: -2px;
+	}
+
+	& input {
+		outline: none;
 	}
 
 	&.entry-password {

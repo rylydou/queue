@@ -1,5 +1,3 @@
-import { type Auth, type AuthUser } from "$lib/types";
-
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
@@ -8,7 +6,8 @@ declare global {
 			message?: string;
 		}
 		interface Locals {
-			auth?: Auth;
+			// auth?: Auth;
+			isAdmin: boolean;
 			isMod: boolean;
 		}
 		interface PageData {}

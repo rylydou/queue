@@ -1,10 +1,23 @@
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 
-const t = initTRPC.create();
+const trpc = initTRPC.create();
 
-/**
- * Export reusable router and procedure helpers
- * that can be used throughout the router
- */
-export const router = t.router;
-export const publicProcedure = t.procedure;
+export const router = trpc.router;
+
+export const publicProcedure = trpc.procedure;
+
+export const modProcedure = trpc.procedure.use((opts) => {
+	const isMod = (opts.ctx as any).isMod || false;
+	if (!isMod) {
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	return opts.next();
+});
+
+export const adminProcedure = trpc.procedure.use((opts) => {
+	const isAdmin = (opts.ctx as any).isAdmin || false;
+	if (!isAdmin) {
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	return opts.next();
+});

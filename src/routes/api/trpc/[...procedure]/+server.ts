@@ -8,9 +8,9 @@ export const GET: RequestHandler = (event) => {
 		req: event.request,
 		router: appRouter,
 		createContext() {
-			// pass anything here that you want to access in your resolvers
 			return {
-				auth: event.locals.auth,
+				isMod: event.locals.isMod,
+				isAdmin: event.locals.isAdmin,
 			};
 		},
 	});

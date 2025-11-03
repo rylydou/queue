@@ -1,4 +1,3 @@
-import type { Auth } from "$lib/types";
 import type { Cookies } from "@sveltejs/kit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
@@ -16,12 +15,17 @@ export const checkHashedPassword = async (plaintext: string, hashedPassword: str
 	return await bcrypt.compare(plaintext, hashedPassword);
 };
 
-const JWT_TOKEN_KEY = "jwt";
-const SESSION_TOKEN_KEY = "session";
+const SESSION_TOKEN_KEY = "session-token";
+const REFRESH_TOKEN_KEY = "refresh-token";
 
-export const isAuthed = async (cookies: Cookies): Promise<string | undefined> => {
+export const getAndRefreshAuth = async (
+	cookies: Cookies,
+): Promise<{
+	token: string;
+	isAdmin: boolean;
+} | null> => {
 	// check session token JWT
-	const jwtToken = cookies.get(JWT_TOKEN_KEY);
+	const jwtToken = cookies.get(SESSION_TOKEN_KEY);
 
 	try {
 		if (jwtToken && jwt.verify(jwtToken, serverConfig.jwtSecret)) {
@@ -29,39 +33,34 @@ export const isAuthed = async (cookies: Cookies): Promise<string | undefined> =>
 
 			const { data } = z
 				.object({
-					id: z.string(),
+					token: z.string(),
+					isAdmin: z.boolean(),
 				})
 				.safeParse(jwtData);
 
 			if (data) {
-				return data.id;
+				return data;
 			}
 		}
 	} catch {}
 
 	// refresh session token with refresh token
-	const sessionToken = cookies.get(SESSION_TOKEN_KEY);
+	const sessionToken = cookies.get(REFRESH_TOKEN_KEY);
 	if (!sessionToken) {
-		return undefined;
+		return null;
 	}
 
 	const session = await orm.query.session.findFirst({
 		where: (t) => eq(t.token, sessionToken),
 		columns: {
 			token: true,
-		},
-		with: {
-			user: {
-				columns: {
-					id: true,
-				},
-			},
+			isAdmin: true,
 		},
 	});
 
 	if (!session) {
 		// session does not exist
-		return undefined;
+		return null;
 	}
 
 	// update last active time on the session
@@ -72,38 +71,38 @@ export const isAuthed = async (cookies: Cookies): Promise<string | undefined> =>
 		})
 		.where(eq(schema.session.token, sessionToken));
 
-	const newJwtToken = jwt.sign({ id: session.user.id }, serverConfig.jwtSecret, {
+	const newJwtToken = jwt.sign({}, serverConfig.jwtSecret, {
 		expiresIn: serverConfig.jwtTimeToLive,
 	});
 
-	cookies.set(JWT_TOKEN_KEY, newJwtToken, {
+	cookies.set(SESSION_TOKEN_KEY, newJwtToken, {
 		path: "/",
 		maxAge: ms(serverConfig.jwtTimeToLive) / 1000,
 	});
 
 	// refresh expiration of session token
-	cookies.set(SESSION_TOKEN_KEY, session.token, {
+	cookies.set(REFRESH_TOKEN_KEY, session.token, {
 		path: "/",
 		maxAge: maxCookieAge,
 	});
 
-	return session.user.id;
+	return session;
 };
 
-export const grantSession = async (userID: string, cookies: Cookies) => {
+export const grantSession = async (cookies: Cookies, adminSession = false) => {
 	// create session
 	const session = (
 		await orm
 			.insert(schema.session)
 			.values({
 				token: newSessionToken(),
-				userID: userID,
+				isAdmin: adminSession,
 			})
 			.returning()
 	)[0];
 
 	// save session token as cookie on client
-	cookies.set(SESSION_TOKEN_KEY, session.token, {
+	cookies.set(REFRESH_TOKEN_KEY, session.token, {
 		path: "/",
 		maxAge: maxCookieAge,
 	});

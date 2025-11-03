@@ -3,8 +3,8 @@ import type { PageServerLoad } from "./$types";
 
 export const load = (async ({}) => {
 	return {
-		current: doc.current,
-		holdQueue: doc.holdQueue,
-		nextQueue: doc.nextQueue,
+		current: doc.queue.current,
+		holdQueue: doc.queue.holdQueue,
+		nextQueue: doc.queue.nextQueue,
 	};
 }) satisfies PageServerLoad;

@@ -1,52 +1,70 @@
 import type { QueueItemData, QueueItemID } from "$lib/types";
 import { file } from "bun";
-import * as config from "./config";
-import { queueListeners, statusListeners } from "./sse";
 import path from "path";
+import z from "zod";
+import { serverConfig } from ".";
+import { queueListeners, statusListeners } from "./sse";
 
-export let current: QueueItemData | null = null;
-export let holdQueue: QueueItemData[] = [];
-export let nextQueue: QueueItemData[] = [];
+// export let current: QueueItemData | null = null;
+// export let holdQueue: QueueItemData[] = [];
+// export let nextQueue: QueueItemData[] = [];
+// export let submissionCount = 0;
 
-export let acceptingSubmissions = true;
+export const configSchema = z.object({
+	setupDone: z.boolean().default(false),
+	adminPasswordHash: z.string().default(""),
+	modPasswordHash: z.string().default(""),
+	acceptingSubmissions: z.boolean().default(false),
+	maxSubmissions: z.int().default(100),
+	maxQueueSize: z.int().default(50),
+});
+export const config = configSchema.parse({} as const);
 
+export const queueSchema = z.object({
+	submissionCount: z.int().default(0),
+	current: z.any().nullable().default(null),
+	holdQueue: z.array(z.any()).default([]),
+	nextQueue: z.array(z.any()).default([]),
+});
+export const queue = queueSchema.parse({} as const);
 export let itemMap = new Map<QueueItemID, QueueItemData>();
 
-const queueFilePath = path.join(config.dataPath, "queues", "main.json");
+const configFilePath = path.join(serverConfig.dataPath, "config.json");
+const queueFilePath = path.join(serverConfig.dataPath, "queue.json");
 
 export const saveData = async () => {
 	console.log("Saving data...");
-	const dataFile = file(queueFilePath);
-	dataFile.write(
-		JSON.stringify({
-			current,
-			holdQueue,
-			nextQueue,
-			acceptingSubmissions,
-		}),
-	);
+
+	const configFile = file(configFilePath);
+	const queueFile = file(queueFilePath);
+
+	configFile.write(JSON.stringify(config));
+	queueFile.write(JSON.stringify(JSON.stringify(configSchema)));
 };
 
 export const loadData = async () => {
-	const dataFile = Bun.file(queueFilePath);
-	if (!dataFile.exists()) {
-		console.log("No existing data found.");
-		return;
-	}
+	const configFile = file(configFilePath);
+	const queueFile = file(queueFilePath);
 
-	console.log("Found existing data!");
+	if (await configFile.exists()) {
+		console.log("Found existing config");
+		const { data: configData } = configSchema.safeParse(await configFile.json());
+		Object.assign(config, configData || {});
 
-	const data = await dataFile.json();
-	current = data.current || null;
-	holdQueue = data.holdQueue || [];
-	nextQueue = data.nextQueue || [];
-	acceptingSubmissions = data.acceptingSubmissions || true;
+		if (await queueFile.exists()) {
+			console.log("Found existing queue");
+			const { data: queueData } = queueSchema.safeParse(await queueFile.json());
+			Object.assign(queue, queueData || {});
 
-	itemMap.clear();
-	for (const item of [current, ...holdQueue, ...nextQueue]) {
-		if (item) {
-			itemMap.set(item.id, item);
+			itemMap.clear();
+			for (const item of [queue.current, ...queue.holdQueue, ...queue.nextQueue]) {
+				if (item) {
+					itemMap.set(item.id, item);
+				}
+			}
 		}
+	} else {
+		console.log("No existing data found.");
 	}
 };
 
@@ -64,31 +82,31 @@ export const createItem = (data: QueueItemData) => {
 	itemMap.set(data.id, data);
 	switch (data.status) {
 		case "current":
-			if (current) {
-				deleteItem(current.id);
+			if (queue.current) {
+				deleteItem(queue.current.id);
 			}
-			current = data;
+			queue.current = data;
 
 			for (const emit of statusListeners.values()) {
-				emit("current", JSON.stringify(current));
+				emit("current", JSON.stringify(queue.current));
 			}
 			break;
 		case "hold":
 			{
-				let index = holdQueue.findIndex((i) => i.id === data.afterID);
+				let index = queue.holdQueue.findIndex((i) => i.id === data.afterID);
 				if (index < 0) {
 					index = 0;
 				}
-				holdQueue.splice(index + 1, 0, data);
+				queue.holdQueue.splice(index + 1, 0, data);
 			}
 			break;
 		case "queue":
 			{
-				let index = nextQueue.findIndex((i) => i.id === data.afterID);
+				let index = queue.nextQueue.findIndex((i) => i.id === data.afterID);
 				if (index < 0) {
 					index = 0;
 				}
-				nextQueue.splice(index + 1, 0, data);
+				queue.nextQueue.splice(index + 1, 0, data);
 			}
 			break;
 	}
@@ -96,6 +114,8 @@ export const createItem = (data: QueueItemData) => {
 	for (const emit of queueListeners.values()) {
 		emit("create", JSON.stringify(data));
 	}
+
+	saveData();
 };
 
 export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "id">) => {
@@ -118,20 +138,20 @@ export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "i
 		// First, remove the item from the previous section
 		switch (prevStatus) {
 			case "current":
-				current = null;
+				queue.current = null;
 				break;
 			case "hold":
 				{
-					let index = holdQueue.findIndex((i) => i.id === patch.id);
+					let index = queue.holdQueue.findIndex((i) => i.id === patch.id);
 					if (index < 0) return;
-					holdQueue.splice(index, 1);
+					queue.holdQueue.splice(index, 1);
 				}
 				break;
 			case "queue":
 				{
-					let index = nextQueue.findIndex((i) => i.id === patch.id);
+					let index = queue.nextQueue.findIndex((i) => i.id === patch.id);
 					if (index < 0) return;
-					nextQueue.splice(index, 1);
+					queue.nextQueue.splice(index, 1);
 				}
 				break;
 		}
@@ -140,31 +160,31 @@ export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "i
 		switch (patch.status) {
 			case "current":
 				// Delete previous current if that exists
-				if (current) {
-					deleteItem(current.id);
+				if (queue.current) {
+					deleteItem(queue.current.id);
 				}
-				current = item;
+				queue.current = item;
 
 				for (const emit of statusListeners.values()) {
-					emit("current", JSON.stringify(current));
+					emit("current", JSON.stringify(queue.current));
 				}
 				break;
 			case "hold":
 				{
-					let index = holdQueue.findIndex((i) => i.id === patch.afterID);
+					let index = queue.holdQueue.findIndex((i) => i.id === patch.afterID);
 					if (index < 0) {
 						index = 0;
 					}
-					holdQueue.splice(index + 1, 0, item);
+					queue.holdQueue.splice(index + 1, 0, item);
 				}
 				break;
 			case "queue":
 				{
-					let index = nextQueue.findIndex((i) => i.id === patch.afterID);
+					let index = queue.nextQueue.findIndex((i) => i.id === patch.afterID);
 					if (index < 0) {
 						index = 0;
 					}
-					nextQueue.splice(index + 1, 0, item);
+					queue.nextQueue.splice(index + 1, 0, item);
 				}
 				break;
 		}
@@ -180,20 +200,20 @@ export const patchItem = (patch: Partial<QueueItemData> & Pick<QueueItemData, "i
 					break;
 				case "hold":
 					{
-						let index = holdQueue.findIndex((i) => i.id === patch.afterID);
+						let index = queue.holdQueue.findIndex((i) => i.id === patch.afterID);
 						if (index < 0) {
 							index = 0;
 						}
-						holdQueue.splice(index + 1, 0, item);
+						queue.holdQueue.splice(index + 1, 0, item);
 					}
 					break;
 				case "queue":
 					{
-						let index = nextQueue.findIndex((i) => i.id === patch.afterID);
+						let index = queue.nextQueue.findIndex((i) => i.id === patch.afterID);
 						if (index < 0) {
 							index = 0;
 						}
-						nextQueue.splice(index + 1, 0, item);
+						queue.nextQueue.splice(index + 1, 0, item);
 					}
 					break;
 			}
@@ -217,21 +237,21 @@ export const deleteItem = (id: QueueItemID) => {
 
 	switch (item.status) {
 		case "current":
-			current = null;
+			queue.current = null;
 
 			for (const emit of statusListeners.values()) {
 				emit("current", "null");
 			}
 			break;
 		case "hold":
-			holdQueue.splice(
-				holdQueue.findIndex((i) => i.id === id),
+			queue.holdQueue.splice(
+				queue.holdQueue.findIndex((i) => i.id === id),
 				1,
 			);
 			break;
 		case "queue":
-			nextQueue.splice(
-				nextQueue.findIndex((i) => i.id === id),
+			queue.nextQueue.splice(
+				queue.nextQueue.findIndex((i) => i.id === id),
 				1,
 			);
 			break;
@@ -247,3 +267,5 @@ export const deleteItem = (id: QueueItemID) => {
 loadData();
 
 process.on("exit", () => saveData());
+process.on("SIGTERM", () => saveData());
+process.on("SIGINT", () => saveData());

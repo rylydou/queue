@@ -1,9 +1,9 @@
-import { doc } from "$lib/stores/app.svelte";
+import { doc } from "$lib/server";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({}) => {
 	return {
-		current: doc.current,
+		current: doc.queue.current,
 		acceptingSubmissions: true,
 	};
 }) satisfies PageServerLoad;
