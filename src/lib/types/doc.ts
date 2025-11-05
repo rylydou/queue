@@ -1,5 +1,6 @@
 export type QueueItemData = {
 	id: QueueItemID;
+	secret: string;
 	submittedAt: Date | string;
 	afterID?: QueueItemID;
 
