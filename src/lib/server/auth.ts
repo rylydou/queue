@@ -107,3 +107,16 @@ export const grantSession = async (cookies: Cookies, adminSession = false) => {
 		maxAge: maxCookieAge,
 	});
 };
+
+// Returns true if a valid session was deleted
+export const deleteSessionUsingCookie = async (cookies: Cookies): Promise<boolean> => {
+	const refreshToken = cookies.get(REFRESH_TOKEN_KEY);
+	if (!refreshToken) return false;
+
+	await orm.delete(schema.session).where(eq(schema.session.token, refreshToken));
+
+	cookies.delete(REFRESH_TOKEN_KEY, { path: "/" });
+	cookies.delete(SESSION_TOKEN_KEY, { path: "/" });
+
+	return true;
+};

@@ -7,6 +7,8 @@ declare global {
 		}
 		interface Locals {
 			// auth?: Auth;
+			refreshToken?: string;
+			sessionToken?: string;
 			isAdmin: boolean;
 			isMod: boolean;
 		}

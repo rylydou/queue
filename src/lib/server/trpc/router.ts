@@ -1,4 +1,4 @@
-import { doc } from "$lib/server";
+import { auth, doc } from "$lib/server";
 import { orm, schema } from "$lib/server/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -9,7 +9,12 @@ export const appRouter = router({
 		return { greeting: `hello ${input.text}` };
 	}),
 
-	deleteAllSessions: adminProcedure.query(async () => {
+	deleteMySession: publicProcedure.query(async ({ ctx }) => {
+		if (!ctx.refreshToken) return;
+		await auth.deleteSessionUsingCookie(ctx.cookies);
+	}),
+
+	deleteAllSessions: adminProcedure.query(async ({}) => {
 		const res = await orm.delete(schema.session).returning();
 		return { deletedCount: res.length };
 	}),

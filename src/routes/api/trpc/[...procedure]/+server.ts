@@ -1,3 +1,4 @@
+import { createContext } from "$lib/server/trpc";
 import { appRouter } from "$lib/server/trpc/router";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import type { RequestHandler } from "./$types";
@@ -7,12 +8,7 @@ export const GET: RequestHandler = (event) => {
 		endpoint: "/api/trpc",
 		req: event.request,
 		router: appRouter,
-		createContext() {
-			return {
-				isMod: event.locals.isMod,
-				isAdmin: event.locals.isAdmin,
-			};
-		},
+		createContext: createContext(event),
 	});
 };
 

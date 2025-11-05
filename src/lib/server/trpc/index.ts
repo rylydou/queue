@@ -1,23 +1,26 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import type { Context } from "./context";
 
-const trpc = initTRPC.create();
+export * from "./context";
+
+const trpc = initTRPC.context<Context>().create();
 
 export const router = trpc.router;
 
 export const publicProcedure = trpc.procedure;
 
-export const modProcedure = trpc.procedure.use((opts) => {
-	const isMod = (opts.ctx as any).isMod || false;
+export const modProcedure = trpc.procedure.use(({ ctx, next }) => {
+	const isMod = ctx.isMod || false;
 	if (!isMod) {
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
-	return opts.next();
+	return next();
 });
 
-export const adminProcedure = trpc.procedure.use((opts) => {
-	const isAdmin = (opts.ctx as any).isAdmin || false;
+export const adminProcedure = trpc.procedure.use(({ ctx, next }) => {
+	const isAdmin = ctx.isAdmin || false;
 	if (!isAdmin) {
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
-	return opts.next();
+	return next();
 });
