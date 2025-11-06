@@ -1,8 +1,8 @@
 // https://github.com/ai/nanoid
 
-import { webcrypto as crypto } from "node:crypto";
+import { webcrypto as crypto } from "crypto";
 
-export const idGenerator = (alphabet: string, defaultLength: number, getRandom?: (bytes: number) => Uint8Array) => {
+export const newIdGenerator = (alphabet: string, defaultLength: number, getRandom?: (bytes: number) => Uint8Array) => {
 	getRandom ||= builtinRandom;
 	// First, a bitmask is necessary to generate the ID. The bitmask makes bytes
 	// values closer to the alphabet size. The bitmask calculates the closest
@@ -47,7 +47,7 @@ const POOL_SIZE_MULTIPLIER = 128;
 let pool: Uint8Array;
 let poolOffset: number;
 
-function fillPool(bytes: number) {
+const fillPool = (bytes: number) => {
 	if (!pool || pool.length < bytes) {
 		pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
 		crypto.getRandomValues(pool);
@@ -57,7 +57,7 @@ function fillPool(bytes: number) {
 		poolOffset = 0;
 	}
 	poolOffset += bytes;
-}
+};
 
 export const builtinRandom = (bytes: number) => {
 	// `-=` convert `bytes` to number to prevent `valueOf` abusing

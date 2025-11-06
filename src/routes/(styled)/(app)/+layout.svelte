@@ -12,7 +12,6 @@
 		const formElements = ["INPUT", "TEXTAREA", "SELECT", "OPTION"];
 		// @ts-ignore
 		if (formElements.includes(e.target?.tagName || "UNKNOWN")) {
-			toast("Ignored: " + e.key);
 			return;
 		}
 

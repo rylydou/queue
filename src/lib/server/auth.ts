@@ -7,6 +7,8 @@ import { z } from "zod";
 import { maxCookieAge, newSessionToken, serverConfig } from ".";
 import { orm, schema } from "./db";
 
+export const sessionTokenSecret = serverConfig.sessionTokenSecret;
+
 export const hashPassword = async (plaintext: string) => {
 	return await bcrypt.hash(plaintext, serverConfig.passwordSaltRounds);
 };
@@ -28,7 +30,7 @@ export const getAndRefreshAuth = async (
 	const jwtToken = cookies.get(SESSION_TOKEN_KEY);
 
 	try {
-		if (jwtToken && jwt.verify(jwtToken, serverConfig.jwtSecret)) {
+		if (jwtToken && jwt.verify(jwtToken, serverConfig.sessionTokenSecret)) {
 			const jwtData = jwt.decode(jwtToken);
 
 			const { data } = z
@@ -71,13 +73,13 @@ export const getAndRefreshAuth = async (
 		})
 		.where(eq(schema.session.token, sessionToken));
 
-	const newJwtToken = jwt.sign({}, serverConfig.jwtSecret, {
-		expiresIn: serverConfig.jwtTimeToLive,
+	const newJwtToken = jwt.sign({}, serverConfig.sessionTokenSecret, {
+		expiresIn: serverConfig.sessionTokenTimeToLive,
 	});
 
 	cookies.set(SESSION_TOKEN_KEY, newJwtToken, {
 		path: "/",
-		maxAge: ms(serverConfig.jwtTimeToLive) / 1000,
+		maxAge: ms(serverConfig.sessionTokenTimeToLive) / 1000,
 	});
 
 	// refresh expiration of session token
@@ -120,3 +122,8 @@ export const deleteSessionUsingCookie = async (cookies: Cookies): Promise<boolea
 
 	return true;
 };
+
+// /**
+//  * Deletes all refresh tokens and optionally invalidates all sessions
+//  */
+// export const nukeAll = async (): Promise<void> => {};

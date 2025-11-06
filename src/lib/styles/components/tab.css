@@ -4,11 +4,13 @@
 	justify-content: stretch;
 	align-items: stretch;
 	padding: 4px;
+	font-size: 12px;
 	border-radius: var(--radius);
 	background-color: var(--muted);
 	color: var(--muted-fg);
 
 	& > .tab-item {
+		cursor: pointer;
 		flex: 1;
 		display: flex;
 		justify-content: center;

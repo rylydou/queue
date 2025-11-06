@@ -1,20 +1,19 @@
-import { env } from "$env/dynamic/private";
-import { config } from "dotenv";
-import { idGenerator } from "./nanoid";
+import * as env from "$env/static/private";
 import type { StringValue } from "ms";
-import path from "path";
+import z from "zod";
+import { newIdGenerator } from "./nanoid";
 
-config();
+export const passwordSaltRounds = Number(env.SESSION_TOKEN_SECRET) || 10;
 
-export const passwordSaltRounds = Number(env.SALT_ROUNDS) || 10;
-
-const jwtSecretGenerator = idGenerator(
+const newSecret = newIdGenerator(
 	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{};':\",.<>/?\\`~",
 	32,
 );
 
-export const jwtSecret = jwtSecretGenerator();
-export const jwtTimeToLive = (env.JWT_TTL || "1h") as StringValue;
-export const jwtSaltRounds = Number(env.JWT_SALT_ROUNDS) || 6;
+export const sessionTokenSecret = newSecret(32);
+export const sessionTokenTimeToLive = (env.SESSION_TOKEN_LIFE_TIME || "1h") as StringValue;
+export const sessionTokenSaltRounds = Number(env.SESSION_TOKEN_SALT_ROUNDS) || 6;
 
 export const dataPath = env.DATA_PATH || "./data";
+export const autoMigrate = z.coerce.boolean().default(true).parse(env.DB_MIGRATE);
+export const dbURL = env.DB_URL || "data/local.db";

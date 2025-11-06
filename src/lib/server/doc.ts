@@ -32,6 +32,8 @@ export let itemMap = new Map<QueueItemID, QueueItemData>();
 const configFilePath = path.join(serverConfig.dataPath, "config.json");
 const queueFilePath = path.join(serverConfig.dataPath, "queue.json");
 
+let isDoingExitSave = false;
+
 export const saveData = async () => {
 	console.log("Saving data...");
 
@@ -40,6 +42,12 @@ export const saveData = async () => {
 
 	configFile.write(JSON.stringify(config));
 	queueFile.write(JSON.stringify(JSON.stringify(configSchema)));
+};
+
+export const attemptExitSave = () => {
+	if (isDoingExitSave) return;
+	isDoingExitSave = true;
+	saveData();
 };
 
 export const loadData = async () => {
@@ -266,6 +274,6 @@ export const deleteItem = (id: QueueItemID) => {
 
 loadData();
 
-process.on("exit", () => saveData());
-process.on("SIGTERM", () => saveData());
-process.on("SIGINT", () => saveData());
+process.on("exit", () => attemptExitSave());
+process.on("SIGTERM", () => attemptExitSave());
+process.on("SIGINT", () => attemptExitSave());

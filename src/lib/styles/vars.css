@@ -26,16 +26,9 @@
 	--primary: var(--base-fg);
 	--primary-fg: var(--base-bg);
 
-	--secondary: var(--base-bg);
+	/* --secondary: color-mix(in oklch, var(--base-bg), var(--muted-fg) 10%); */
+	--secondary: var(--muted);
 	--secondary-fg: var(--base-fg);
 
 	--border: oklch(0.92 0.004 286.32);
-
-	--sidebar-bg: oklch(0.985 0 0);
-	--sidebar-fg: oklch(0.141 0.005 285.823);
-	--sidebar-primary: oklch(0.645 0.246 16.439);
-	--sidebar-primary-fg: oklch(0.969 0.015 12.422);
-	--sidebar-accent: oklch(0.967 0.001 286.375);
-	--sidebar-accent-fg: oklch(0.21 0.006 285.885);
-	--sidebar-border: oklch(0.92 0.004 286.32);
 }
